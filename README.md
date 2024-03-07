@@ -21,4 +21,4 @@ CUT 4
 26970 5790   
 22940 5790   
 
-The executable is found in /x64/debug.
+The executable is found in /x64/Debug.
