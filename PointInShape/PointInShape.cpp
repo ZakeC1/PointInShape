@@ -1,20 +1,69 @@
-// PointInShape.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+#include<iostream>
+#include<fstream>
+#include<string>
 
-#include <iostream>
+using namespace std;
 
-int main()
+int crossingChecker(int* shapex, int* shapey, int verts, int x, int y);
+
+int main(int argc, char* argv[])
 {
-    std::cout << "Hello World!\n";
+    fstream inFile(argv[1]);
+    int* xverts;
+    int* yverts;
+    int size, crossings = 0;
+    int xcord = atoi(argv[2]);
+    int ycord = atoi(argv[3]);
+
+    string word;
+
+    // Parses the text file word by word until empty
+    while (inFile >> word) {
+        // Creates an array that contains the vertices of either the main shape or the cut
+        if (word == "OUTLINE" || word == "CUT") {
+            inFile >> word;
+            try {
+                size = stoi(word);
+                xverts = new int[size];
+                yverts = new int[size];
+                for (int i = 0; i < size; i++) {
+                    inFile >> word;
+                    xverts[i] = stoi(word);
+                    inFile >> word;
+                    yverts[i] = stoi(word);
+                }
+                //Counts the amount of lines the point crosses and adds it to the total crosses
+                crossings += crossingChecker(xverts, yverts, size, xcord, ycord);
+            }
+            catch (...) {
+                cout << "Invalid Coordinates";
+            }
+        }
+        else {
+            cout << "File in wrong format";
+        }
+
+    }
+    inFile.close();
+
+    //Determines if points is in the shape based on the amount or lines it has crossed
+    if (crossings % 2 == 0) {
+        cout << "Point " << xcord << "," << ycord << " is OUTSIDE the shape";
+        return 0;
+    }
+    else {
+        cout << "Point " << xcord << "," << ycord << " is INSIDE the shape";
+        return 1;
+    }
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+//Counts the amount of perpendicular lines of the shape this point would cross
+int crossingChecker(int* shapex, int* shapey, int verts, int x, int y) {
+    int c = 0;
+    for (int i = 0, j = verts - 1; i < verts; j = i++) {
+        if (((shapey[i] > y) != (shapey[j] > y)) && (shapex[i] > x) && (shapex[j])) {
+            c += 1;
+        }
+    }
+    return c;
+}
